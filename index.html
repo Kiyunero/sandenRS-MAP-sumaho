@@ -99,6 +99,11 @@
                     </div>
                 </div>
 
+                <div v-if="isStampCompleted" class="d-grid gap-2 mb-4">
+                    <button class="btn btn-warning" @click="showCompleteScreen">
+                        🎉 コンプリート報酬を確認する
+                    </button>
+                </div>
                 <div v-if="inProgressQuests.length > 0" class="card p-3 mb-4 shadow-sm quest-list-container">
                     <h5 class="card-title text-center text-with-shadow">進行中の修行内容</h5>
                     <ul class="list-group">
