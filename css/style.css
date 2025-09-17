@@ -1,0 +1,253 @@
+body {
+    background-color: #f8f9fa;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.text-with-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+#app {
+    max-width: 100%;
+    padding: 0;
+}
+
+#animation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+#animation-overlay > div {
+    max-width: 90%;
+    max-height: 90%;
+    width: 400px;
+}
+
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    z-index: 10000;
+}
+
+#map-container {
+    position: relative;
+    width: 100%;
+    height: 40vh;
+    overflow: auto;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #e9ecef;
+    overscroll-behavior: none;
+    display: flex;
+    justify-content: center;
+}
+
+.map-content-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.floor-map-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.user-location-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(0, 123, 255, 0.9);
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.7);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.spot-marker-container {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    cursor: pointer;
+}
+
+.spot-marker-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.spot-marker-icon:hover {
+    transform: scale(1.1);
+}
+
+.spot-marker-icon.completed {
+    opacity: 0.5;
+}
+
+.spot-info-window {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: max-content;
+    max-width: 200px;
+    z-index: 20;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.oshi-selector-container {
+    background-color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.oshi-selector-title {
+    margin: 0 0 8px 0;
+    font-weight: bold;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.oshi-icons-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.oshi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.oshi-icon:hover {
+    transform: scale(1.1);
+}
+
+.oshi-icon.selected {
+    border-color: #0d6efd;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    transform: scale(1.1);
+}
+
+.content-container {
+    padding: 1rem;
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.auth-token {
+    font-weight: bold;
+    color: #0d6efd;
+    letter-spacing: 2px;
+}
+
+#scanner-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+}
+
+#scanner-video {
+    width: 80%;
+    max-width: 400px;
+    border: 3px solid white;
+    border-radius: 8px;
+}
+
+#scanner-container .btn {
+    margin-top: 20px;
+}
+
+.stamp-card-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.stamp-base-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.stamp-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+}
+
+/* ▼▼▼ スタンプカードのタイトルのスタイルを元に戻し、改行防止を追加 ▼▼▼ */
+.stamp-card-title {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    color: rgb(0, 149, 255); /* 色を白に戻す */
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.448); /* テキストシャドウを復活 */
+    width: 90%;
+    text-align: center;
+    white-space: nowrap; /* 改行を禁止する */
+}
+/* ▲▲▲ ここまで変更 ▲▲▲ */
+
+.quest-list-container {
+    text-align: left;
+}
+
+.quest-item-card {
+    background-color: #e9ecef;
+}
