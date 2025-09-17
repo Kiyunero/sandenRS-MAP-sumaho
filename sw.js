@@ -12,14 +12,19 @@ const urlsToCache = [
   '/images/stamp_layer_3.png',
   '/images/stamp_layer_4.png',
   '/images/stamp_layer_5.png',
-  '/images/special_reward.png',
   // ▼▼▼ 推しキャラのアイコンをキャッシュリストに追加 ▼▼▼
   '/images/oshi_1.png',
   '/images/oshi_2.png',
   '/images/oshi_3.png',
   '/images/oshi_4.png',
-  '/images/oshi_5.png'
+  '/images/oshi_5.png',
   // ▲▲▲ ここまで追加 ▲▲▲
+  // ▼▼▼ 変更箇所 ▼▼▼
+  // --- 報酬画像をキャッシュ対象に追加 ---
+  // main.jsのREWARD_IMAGESリストと内容を合わせてください
+  '/images/special_reward.png'
+  // '/images/special_reward_2.png', // 報酬画像を追加した場合、ここにも追加します
+  // ▲▲▲ 変更箇所 ▲▲▲
 ];
 
 // インストール時にファイルをキャッシュする

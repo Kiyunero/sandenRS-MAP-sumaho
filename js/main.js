@@ -12,6 +12,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// ▼▼▼ 変更箇所 ▼▼▼
+// --- 設定項目 ---
+// スタンプのレイヤー画像
 const STAMP_LAYERS = [
     'images/stamp_layer_1.png',
     'images/stamp_layer_2.png',
@@ -19,6 +22,17 @@ const STAMP_LAYERS = [
     'images/stamp_layer_4.png',
     'images/stamp_layer_5.png',
 ];
+
+// コンプリートに必要なスタンプの数
+const STAMP_COMPLETE_COUNT = 1;
+
+// コンプリート時の報酬画像リスト（複数登録可能）
+const REWARD_IMAGES = [
+    { name: 'コンプリート報酬', url: 'images/special_reward.png' },
+    // { name: '追加の報酬画像', url: 'images/special_reward_2.png' }, // 追する場合はこのように記述
+];
+// --- 設定項目ここまで ---
+// ▲▲▲ 変更箇所 ▲▲▲
 
 function initPwaMap() {
     const app = Vue.createApp({
@@ -56,18 +70,28 @@ function initPwaMap() {
                 userGpsPosition: { lat: null, lng: null },
                 userPixelPosition: { x: null, y: null },
                 activeSpot: null,
-                // ▼▼▼ 動的なマップ表示サイズを保存するデータを追加 ▼▼▼
                 displaySize: { width: 0, height: 0 },
-                // ▲▲▲ ここまで追加 ▲▲▲
+                // ▼▼▼ 変更箇所 ▼▼▼
+                isCompleteScreenVisible: false, // コンプリート画面の表示状態
+                rewardImages: REWARD_IMAGES, // 報酬画像のリスト
+                // ▲▲▲ 変更箇所 ▲▲▲
             };
         },
         computed: {
-            completedStamps() {
-                if (!this.userProfile || !this.userProfile.questProgress) return [];
-                const completedCount = Object.values(this.userProfile.questProgress)
+            completedQuestCount() {
+                if (!this.userProfile || !this.userProfile.questProgress) return 0;
+                return Object.values(this.userProfile.questProgress)
                     .filter(status => status === 'completed').length;
-                return STAMP_LAYERS.slice(0, completedCount);
             },
+            completedStamps() {
+                return STAMP_LAYERS.slice(0, this.completedQuestCount);
+            },
+            // ▼▼▼ 変更箇所 ▼▼▼
+            isStampCompleted() {
+                // 設定したコンプリート数に達しているか判定
+                return this.completedQuestCount >= STAMP_COMPLETE_COUNT;
+            },
+            // ▲▲▲ 変更箇所 ▲▲▲
             inProgressQuests() {
                 if (!this.userProfile || !this.userProfile.questProgress || this.allQuests.length === 0) return [];
                 const inProgressQuestIds = Object.keys(this.userProfile.questProgress)
@@ -79,10 +103,8 @@ function initPwaMap() {
                 return selectedOshi ? selectedOshi.icon : '';
             },
             spotsWithPixelPosition() {
-                // ▼▼▼ 判定に動的な表示サイズを使用するよう変更 ▼▼▼
                 const imageWidth = this.displaySize.width;
                 const imageHeight = this.displaySize.height;
-                // ▲▲▲ ここまで変更 ▲▲▲
 
                 return this.spots.map(spot => {
                     const spotGps = {
@@ -105,10 +127,8 @@ function initPwaMap() {
                 }
                 const px = this.userPixelPosition.x;
                 const py = this.userPixelPosition.y;
-                // ▼▼▼ 判定に動的な表示サイズを使用するよう変更 ▼▼▼
                 const imageWidth = this.displaySize.width;
                 const imageHeight = this.displaySize.height;
-                // ▲▲▲ ここまで変更 ▲▲▲
                 return px >= 0 && px <= imageWidth && py >= 0 && py <= imageHeight;
             }
         },
@@ -123,18 +143,20 @@ function initPwaMap() {
             await this.$nextTick();
             this.startGpsTracking();
             
-            // ▼▼▼ マップサイズの計算処理を実行＆リサイズイベント監視を追加 ▼▼▼
             this.updateMapDimensions();
             window.addEventListener('resize', this.updateMapDimensions);
-            // ▲▲▲ ここまで追加 ▲▲▲
+
+            // ▼▼▼ 変更箇所 ▼▼▼
+            // アプリ起動時にコンプリート済みかチェック
+            if (this.isStampCompleted) {
+                this.showCompleteScreen();
+            }
+            // ▲▲▲ 変更箇所 ▲▲▲
         },
-        // ▼▼▼ リサイズイベントの監視を解除する処理を追加 ▼▼▼
         beforeUnmount() {
             window.removeEventListener('resize', this.updateMapDimensions);
         },
-        // ▲▲▲ ここまで追加 ▲▲▲
         methods: {
-            // ▼▼▼ マップの表示サイズを計算するメソッドを追加 ▼▼▼
             updateMapDimensions() {
                 const container = document.getElementById('map-container');
                 if (!container) return;
@@ -144,21 +166,18 @@ function initPwaMap() {
                 const originalHeight = this.mapConfig.imageSize.height;
 
                 if (originalWidth < containerWidth) {
-                    // 画像の幅がコンテナより狭い場合、コンテナ幅に合わせて拡大
                     const scaleFactor = containerWidth / originalWidth;
                     this.displaySize = {
                         width: containerWidth,
                         height: originalHeight * scaleFactor
                     };
                 } else {
-                    // 画像の幅がコンテナより広い場合は、そのままのサイズで表示
                     this.displaySize = {
                         width: originalWidth,
                         height: originalHeight
                     };
                 }
             },
-            // ▲▲▲ ここまで追加 ▲▲▲
             async initializeUser() {
                 let savedUserId = localStorage.getItem('questAppUserId');
                 if (savedUserId) {
@@ -180,7 +199,14 @@ function initPwaMap() {
                 this.userListener = userRef.onSnapshot((doc) => {
                     console.log("スマホアプリ側でユーザーデータの更新を検知しました。");
                     if (doc.exists) {
+                        const oldQuestCount = this.completedQuestCount;
                         this.userProfile = doc.data();
+                        // ▼▼▼ 変更箇所 ▼▼▼
+                        // データ更新後にコンプリート判定を行う
+                        if (this.isStampCompleted && oldQuestCount < STAMP_COMPLETE_COUNT) {
+                           this.showCompleteScreen();
+                        }
+                        // ▲▲▲ 変更箇所 ▲▲▲
                     } else {
                         const newUserProfile = { userId: this.userId, questProgress: {}, points: 0 };
                         userRef.set(newUserProfile);
@@ -221,10 +247,8 @@ function initPwaMap() {
                 );
             },
             convertGpsToPixel(gps) {
-                // ▼▼▼ 計算基準を元の画像サイズから動的な表示サイズに変更 ▼▼▼
                 const { topLeft, bottomRight } = this.mapConfig;
                 const imageSize = this.displaySize;
-                // ▲▲▲ ここまで変更 ▲▲▲
                 
                 if (!gps || gps.lat === null || gps.lng === null || imageSize.width === 0) {
                     return { x: null, y: null };
@@ -246,7 +270,6 @@ function initPwaMap() {
             isQuestCompleted(questId) {
                 return this.userProfile?.questProgress[questId] === 'completed';
             },
-
             toggleSpotInfo(spot) {
                 if (this.activeSpot && this.activeSpot.id === spot.id) {
                     this.activeSpot = null;
@@ -254,12 +277,10 @@ function initPwaMap() {
                     this.activeSpot = spot;
                 }
             },
-            
             setMyOshi(oshiId) {
                 this.myOshi = oshiId;
                 localStorage.setItem('myOshi', oshiId);
             },
-
             async generateAuthToken() {
                 this.isTokenLoading = true;
                 this.authToken = null;
@@ -416,7 +437,35 @@ function initPwaMap() {
                         anim.destroy();
                     });
                 });
+            },
+            // ▼▼▼ 変更箇所 ▼▼▼
+            showCompleteScreen() {
+                this.isCompleteScreenVisible = true;
+            },
+            closeCompleteScreen() {
+                this.isCompleteScreenVisible = false;
+            },
+            async downloadImage(imageUrl) {
+                try {
+                    const response = await fetch(imageUrl);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    // ファイル名をURLから抽出
+                    const fileName = imageUrl.split('/').pop();
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                } catch (error) {
+                    console.error('画像のダウンロードに失敗しました:', error);
+                    alert('画像のダウンロードに失敗しました。');
+                }
             }
+            // ▲▲▲ 変更箇所 ▲▲▲
         }
     });
     window.pwaVueApp = app.mount('#app');
