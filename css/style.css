@@ -47,7 +47,6 @@ body {
     z-index: 10000;
 }
 
-/* ▼▼▼ 変更箇所 ▼▼▼ */
 /* --- コンプリート画面のスタイル --- */
 @keyframes background-pan {
     0% { background-position: 0% 50%; }
@@ -104,11 +103,12 @@ body {
 }
 
 .complete-title {
-    font-size: 2.8rem;
+    font-size: clamp(1.8rem, 10vw, 2.8rem);
     font-weight: bold;
     color: #FFD700;
     text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700, 0 0 20px #E6A200, 0 0 30px #E6A200;
     margin-bottom: 0.5rem;
+    word-break: break-all;
 }
 
 .complete-subtitle {
@@ -186,13 +186,15 @@ body {
     margin-left: 0.3em; /* letter-spacingのズレ補正 */
 }
 /* --- コンプリート画面ここまで --- */
-/* ▲▲▲ 変更箇所 ▲▲▲ */
 
 
 #map-container {
     position: relative;
     width: 100%;
-    height: 40vh;
+    /* ▼▼▼ 変更箇所 ▼▼▼ */
+    height: 35vh; /* 初期高さを設定 */
+    min-height: 20px; /* これ以上は小さくならないように設定 */
+    /* ▲▲▲ 変更箇所 ▲▲▲ */
     overflow: auto;
     border-bottom: 1px solid #dee2e6;
     background-color: #e9ecef;
@@ -200,6 +202,30 @@ body {
     display: flex;
     justify-content: center;
 }
+
+/* ▼▼▼ 変更箇所 ▼▼▼ */
+/* リサイズハンドルのスタイルを追加 */
+#resizer {
+    width: 100%;
+    height: 12px;
+    background-color: #e0e0e0;
+    cursor: ns-resize; /* 上下方向のリサイズカーソルを表示 */
+    border-top: 1px solid #bdbdbd;
+    border-bottom: 1px solid #bdbdbd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ハンドルの中央にある操作を示す横線 */
+#resizer::after {
+    content: '';
+    width: 50px;
+    height: 4px;
+    background-color: #a0a0a0;
+    border-radius: 2px;
+}
+/* ▲▲▲ 変更箇所 ▲▲▲ */
 
 .map-content-wrapper {
     position: relative;
