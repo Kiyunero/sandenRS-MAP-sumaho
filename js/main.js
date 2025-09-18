@@ -31,6 +31,9 @@ const REWARD_IMAGES = [
     { name: 'コンプリート報酬', url: 'images/special_reward.png' },
     // { name: '追加の報酬画像', url: 'images/special_reward_2.png' }, // 追する場合はこのように記述
 ];
+
+// コンプリート時の合言葉
+const COMPLETE_SECRET_CODE = '123456'; 
 // --- 設定項目ここまで ---
 // ▲▲▲ 変更箇所 ▲▲▲
 
@@ -74,6 +77,7 @@ function initPwaMap() {
                 // ▼▼▼ 変更箇所 ▼▼▼
                 isCompleteScreenVisible: false, // コンプリート画面の表示状態
                 rewardImages: REWARD_IMAGES, // 報酬画像のリスト
+                completeSecretCode: COMPLETE_SECRET_CODE, // 合言葉
                 // ▲▲▲ 変更箇所 ▲▲▲
             };
         },
